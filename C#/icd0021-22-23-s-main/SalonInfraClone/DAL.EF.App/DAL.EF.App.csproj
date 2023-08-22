@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>DAL</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="12.0.1" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.5" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DAL.Contracts.App\DAL.Contracts.App.csproj" />
+      <ProjectReference Include="..\DAL.EF.Base\DAL.EF.Base.csproj" />
+      <ProjectReference Include="..\Domain.App\Domain.App.csproj" />
+      <ProjectReference Include="..\HelperMethods.Base\HelperMethods.Base.csproj" />
+      <ProjectReference Include="..\Public.DTO\Public.DTO.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>aspnet-WebApp-5C6D932D-BDDF-476D-A598-4E271C6DD6CB</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.0.0" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
+        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.5" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.5" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.5" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.5" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.5" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.5">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.6" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\BLL.App\BLL.App.csproj" />
+      <ProjectReference Include="..\BLL.Contracts.App\BLL.Contracts.App.csproj" />
+      <ProjectReference Include="..\DAL.EF.App\DAL.EF.App.csproj" />
+      <ProjectReference Include="..\Domain.App\Domain.App.csproj" />
+      <ProjectReference Include="..\Public.DTO\Public.DTO.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Records\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Records\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Records\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Records\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Records\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Discounts\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Discounts\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Discounts\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Discounts\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Discounts\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Services\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Services\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Services\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Services\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Services\Index.cshtml" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+
+</Project>

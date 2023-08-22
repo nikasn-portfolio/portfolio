@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  salonclone-22-23s-app:
+    container_name: salonclone-22-23s-app
+    build:
+        context: ./SalonInfraClone
+        dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - salonclone-22-23s-db
+    environment:
+      - ConnectionStrings:DefaultConnection=Host=salonclone-22-23s-db:5445;Database=salon;Username=postgres;Password=postgres
+  salonclone-22-23s-db:
+    container_name: salonclone-22-23s-db
+    image: "postgres:15.2-bullseye"
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      # external:internal
+      - "5445:5432"
+    volumes:
+      - salonclone-22-23s-db-postgres-volume:/var/lib/postgresql/data
+
+volumes:
+  salonclone-22-23s-db-postgres-volume:
