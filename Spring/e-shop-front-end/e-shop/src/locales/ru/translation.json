@@ -1,0 +1,17 @@
+{
+    "React" : "Questo è React",
+    "Home": "Casa",
+    "Contact": "Contattaci",
+    "About": "Riguardo a noi",
+    "username": {
+        "label": "nome utente",
+        "placeholder": "segnaposto..."
+    },
+    "password": {
+        "label": "parola d'ordine",
+        "placeholder": "segnaposto password..."
+    },
+    "location": "Inserisci la posizione",
+    "Address": "Inserisci l'indirizzo",
+    "Buy" : "Купить"
+}
