@@ -1,0 +1,5 @@
+make opposite checkers not clickable
+make board not clickable when game is over
+make board not clickable when it's not your turn
+make board nicer
+add shapes to checkers

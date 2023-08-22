@@ -1,0 +1,217 @@
+@page
+@using System.Web
+@using Domain
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.Extensions.Primitives
+@using Microsoft.IdentityModel.Tokens
+@model WebApp.Pages.CheckersGames.CurrentGame
+@{
+    var boardCopy = Model.Brain.GetBoard();
+    string? selectedX = Request.Query["selectedX"];
+    string? selectedY = Request.Query["selectedY"];
+}
+
+@{
+    /*<h2>@($"{Model.SelectedXHeight}")</h2>
+    <h2>@($"{Model.SelectedYWidth}")</h2>
+    <h2>@($"{selectedX}" + "selected")</h2>
+    <h2>
+        @{
+            if (Model.DictionaryForDestinationAndForDelete != null)
+            {
+                <h2> @($"{Model.DictionaryForDestinationAndForDelete.Count}") </h2>
+                foreach (KeyValuePair<BoardCoordsForDictionary, BoardCoordsForDictionary> ele2 in Model.DictionaryForDestinationAndForDelete)
+                {
+                    <text>@($"{ele2.Key.GetBoardWidthY()} {ele2.Key.GetBoardHeightX()} | {ele2.Value.GetBoardWidthY()} {ele2.Value.GetBoardHeightX()} ||")</text>
+                }
+            }
+
+        }
+    </h2>*/ 
+}
+    
+
+<h2>Next move: @(Model.Brain.NextMoveByBlack() ? $"Player B - {Model.CheckersGame!.Player1Name} - BLACK" : $"Player A - {Model.CheckersGame!.Player2Name} - WHITE")</h2>
+<table class="table-bordered game-table">
+    @for (var x = 0; x < boardCopy.GetLength(1); x++)
+    {
+        <tr>
+            @for (var y = 0; y < boardCopy.GetLength(0); y++)
+            {
+                <td class="game-table-cell @GetCellToMove(x, y) @GetBackGroundColorOfBoard(x, y)"
+                    @{
+                        if (Model.DictionaryForDestinationAndForDelete != null && Model.DictionaryForDestinationAndForDelete.Count > 0)
+                        {
+                            foreach (KeyValuePair<BoardCoordsForDictionary, BoardCoordsForDictionary> ele2 in Model.DictionaryForDestinationAndForDelete)
+                            {
+                                if (x == ele2.Key.BoardHeightX && y == ele2.Key.BoardWidthY)
+                                {
+                                    if (Model.CheckersGame.Player2Type == EPlayerType.AI && Model.Brain.NextMoveByBlack() == false)
+                                    {
+                                        RedirectToPage("./CurrentGame", new { id = Model.CheckersGame.Id, x, y, selectedX = Model.SelectedXHeight, selectedY = Model.SelectedYWidth, deleteX = GetXToDelete(x, y), deleteY = GetYToDelete(x, y) });
+                                    }
+                                    <text>
+                                        onclick="window.location = '/CheckersGames/CurrentGame?id=@Model.CheckersGame.Id&x=@x&y=@y&selectedX=@Model.SelectedXHeight&selectedY=@Model.SelectedYWidth&deleteX=@GetXToDelete(x, y)&deleteY=@GetYToDelete(x, y)'"
+                                    </text>
+                                }
+                                if (Model.Brain.NextMoveByBlack() == false && (boardCopy[y, x] == EGamePiece.White || boardCopy[y, x] == EGamePiece.WhiteKing) && Model.MoveInProcess == 0)
+                                {
+                                    <text>
+                                        onclick="window.location = '/CheckersGames/CurrentGame?id=@Model.CheckersGame.Id'"
+                                    </text>
+                                }
+                                if (Model.Brain.NextMoveByBlack() && boardCopy[y, x] == EGamePiece.Black || boardCopy[y, x] == EGamePiece.BlackKing && Model.MoveInProcess == 0)
+                                {
+                                    <text>
+                                        onclick="window.location = '/CheckersGames/CurrentGame?id=@Model.CheckersGame.Id'"
+                                    </text>
+                                }
+                            }
+                        }else if ((boardCopy[y, x] == EGamePiece.Black || boardCopy[y, x] == EGamePiece.BlackKing || boardCopy[y, x] == null) && Model.Brain.NextMoveByBlack())
+                        {
+                            <text>
+                                onclick="window.location = '/CheckersGames/CurrentGame?id=@Model.CheckersGame.Id&x=@x&y=@y&selectedX=@Model.SelectedXHeight&selectedY=@Model.SelectedYWidth&deleteX=@GetXToDelete(x, y)&deleteY=@GetYToDelete(x, y)'"
+                            </text>
+                        }
+                        else if ((boardCopy[y, x] == EGamePiece.White || boardCopy[y, x] == EGamePiece.WhiteKing || boardCopy[y, x] == null) && Model.Brain.NextMoveByBlack() == false)
+                        {
+                            <text>
+                                onclick="window.location = '/CheckersGames/CurrentGame?id=@Model.CheckersGame.Id&x=@x&y=@y&selectedX=@Model.SelectedXHeight&selectedY=@Model.SelectedYWidth&deleteX=@GetXToDelete(x, y)&deleteY=@GetYToDelete(x, y)'"
+                            </text>
+                        }
+                    }>
+                    @if (boardCopy[y, x] == EGamePiece.White)
+                    {
+                        <div class="number-white">
+                            <span></span>
+                        </div>
+                    }
+                    @if (boardCopy[y, x] == EGamePiece.Black)
+                    {
+                        <div class="number-black">
+                            <span></span>
+                        </div>
+                    }
+                    @if (boardCopy[y, x] == EGamePiece.BlackKing)
+                    {
+                        <div class="number-black">
+                            <span>
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/25/Simple_gold_crown.svg" width="75%" alt="none"/>
+                            </span>
+                        </div>
+                    }
+                    @if (boardCopy[y, x] == EGamePiece.WhiteKing)
+                    {
+                        <div class="number-white">
+                            <span>
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/25/Simple_gold_crown.svg" width="75%" alt="none"/>
+                            </span>
+                        </div>
+                    }
+
+
+
+                </td>
+            }
+        </tr>
+    }
+</table>
+
+
+<table>
+    @{
+        <tr>
+            <text onclick="window.location = '/CheckersGames/CurrentGame?id=@Model.CheckersGame.Id&undo=@("undo")'">
+                Click Here To Load Last Move / Set Moves!
+                @Model.GameStateCreatedTime
+            </text>
+        </tr>
+    }
+</table>
+
+
+@functions
+{
+    string GetCellToMove(int x, int y)
+    {
+        if (Model.DictionaryForDestinationAndForDelete != null)
+        {
+            foreach (KeyValuePair<BoardCoordsForDictionary, BoardCoordsForDictionary> ele2 in Model.DictionaryForDestinationAndForDelete)
+            {
+                if (x == ele2.Key.BoardHeightX && y == ele2.Key.BoardWidthY)
+                {
+                    return "game-table-cell-to-move";
+                }
+            }
+        }
+        return "";
+    }
+    string GetBackGroundColorOfBoard(int x, int y)
+    {
+        if (x % 2 == 0)
+        {
+            return y % 2 == 0 ? "game-table-cell-black" : "game-table-cell-white";
+        }
+        return y % 2 == 0 ? "game-table-cell-white" : "game-table-cell-black";
+    }
+}
+
+@functions{
+
+    int? GetXToDelete(int x, int y)
+    {
+        if (Model.DictionaryForDestinationAndForDelete != null)
+        {
+            foreach (KeyValuePair<BoardCoordsForDictionary, BoardCoordsForDictionary> ele2 in Model.DictionaryForDestinationAndForDelete)
+            {
+                if (ele2.Key.BoardHeightX == x && ele2.Key.BoardWidthY == y)
+                {
+                    return ele2.Value.BoardHeightX;
+                }
+            }
+        }
+        return null;
+    }
+
+}
+
+@functions{
+
+    int? GetYToDelete(int x, int y)
+    {
+        if (Model.DictionaryForDestinationAndForDelete != null)
+        {
+            foreach (KeyValuePair<BoardCoordsForDictionary, BoardCoordsForDictionary> ele2 in Model.DictionaryForDestinationAndForDelete)
+            {
+                if (ele2.Key.BoardHeightX == x && ele2.Key.BoardWidthY == y)
+                {
+                    return ele2.Value.BoardWidthY;
+                }
+            }
+        }
+        return null;
+    }
+
+}
+
+@functions
+{
+    /*string GetClickEvent(EGamePiece?[,] board, int x, int y)
+    {
+    // || board[y, x] == EGamePiece.BlackKing
+        if (Model.Brain.NextMoveByBlack())
+        {
+            if (board[y, x] == EGamePiece.Black || board[y, x] == null)
+            {
+                return "onclick=window.location = '/CheckersGames/CurrentGame?id=" + $"{Model.CheckersGame!.Id}" +
+                       "&x=" + $"{x}" +
+                       "&y=" + $"{y}" +
+                       "&selectedX=" + $"{Model.SelectedXHeight}" +
+                       "&selectedY=" + $"{Model.SelectedYWidth}" +
+                       "&deleteX=" + $"{GetXToDelete(x, y)}" +
+                       "&deleteY=" + $"{GetYToDelete(x, y)}" + "'";
+            }
+        }
+        return "";
+    }*/
+}
