@@ -5,4 +5,6 @@ export interface IProductSize{
     size: ISize;
     quantity: number;
     price: number;
+    emptyPrice: number;
+    fullPrice: number
 }

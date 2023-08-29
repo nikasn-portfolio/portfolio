@@ -48,7 +48,7 @@ export const ItemCard = (props: Props) => {
                     </div>
                 </div>
             </div>
-            <h6>Price: {Math.min(...props.product.productSizes.filter(productSize => productSize.quantity > 0).map(productSize => productSize.price))}€</h6>
+            <h6>Price: {Math.min(...props.product.productSizes.filter(productSize => productSize.quantity > 0).map(productSize => productSize.emptyPrice))}€</h6>
             <ButtonTemplate onClick={handleClick} text={t("Buy")} />
 
         </div>

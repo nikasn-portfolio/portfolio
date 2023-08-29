@@ -1,5 +1,5 @@
-# node-modules are deleted
-run to get node_modules folder
+# To start appliction
+
 ### `npm install`
 
 # Getting Started with Create React App

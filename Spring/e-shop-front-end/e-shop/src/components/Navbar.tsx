@@ -21,7 +21,7 @@ const Navbar = () => {
         if (jwt != null) {
             let decodedJwt = jwt_decode(jwt.jwt) as any
             setDecodedJwt(decodedJwt);
-            if(setUsername && setUserPhoneNumber && setUserFullname){
+            if (setUsername && setUserPhoneNumber && setUserFullname) {
                 setUsername(decodedJwt.sub);
                 setUserFullname(decodedJwt.fullname);
                 setUserPhoneNumber(decodedJwt.phone);
@@ -32,7 +32,7 @@ const Navbar = () => {
 
     useEffect(() => {
         setListOfProducts(cartList);
-    },[cartList])
+    }, [cartList])
 
     useEffect(() => {
         const mediaQuery = window.matchMedia('(max-width: 992px)');
@@ -72,15 +72,15 @@ const Navbar = () => {
 
     const handleLogOut = () => {
         console.log('test')
-        if(setJwt && setUserFullname && setUserPhoneNumber && setUsername){
+        if (setJwt && setUserFullname && setUserPhoneNumber && setUsername) {
             setJwt(null);
             setUserFullname(null);
             setUserPhoneNumber(null);
             setUsername(null)
         }
-        
+
     }
-      
+
 
 
 
@@ -88,14 +88,14 @@ const Navbar = () => {
         (isScreenSmall ? (<nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container-fluid" ref={ref}>
                 <Link className="navbar-brand" to={`./products/?lang=${localStorage.getItem("lang")}`}>Navbar</Link>
-                
+
                 {isScreenSmall && (
                     <>
                         <div className="navbar-language"><LanguageSelector /></div>
                         <div className='navbar-cart'>
-                            <CartIcon cartIcon={cartIcon} cartList={listOfProducts} setShowCart={setShowCart}/>
+                            <CartIcon cartIcon={cartIcon} cartList={listOfProducts} setShowCart={setShowCart} />
                         </div>
-                        
+
                     </>
                 )}
                 <button className="navbar-toggler togglerCustom" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -127,22 +127,22 @@ const Navbar = () => {
                             <Link to={"/login"}><button className='loginButton'>Sign In</button></Link>
                             <Link to={"/register"}><button className='registerButton'>Sign Up</button></Link>
                         </div>}
-                        
+
                     </ul>
                 </div>
             </div>
             {jwt != null && decodedJwt != null && <div className='profileButtonsContainer' style={profileStyles}>
-                            <div className="dropdownprofile">
-                                <div className="dropbtnprofile">
-                                    <img src={profileIcon} alt="" className='profileIcon' />
-                                    <span className='profileUsername'>{decodedJwt.sub}</span>
-                                </div>
-                                <div className="dropdown-content-profile">
-                                    <Link to={'/profile'}><span>Profile</span></Link>
-                                    <Link to={'/home'} onClick={handleLogOut}><span>Logout</span></Link>
-                                </div>
-                            </div>
-                        </div>}
+                <div className="dropdownprofile">
+                    <div className="dropbtnprofile">
+                        <img src={profileIcon} alt="" className='profileIcon' />
+                        <span className='profileUsername'>{decodedJwt.sub}</span>
+                    </div>
+                    <div className="dropdown-content-profile">
+                        <Link to={'/profile'}><span>Profile</span></Link>
+                        <Link to={'/home'} onClick={handleLogOut}><span>Logout</span></Link>
+                    </div>
+                </div>
+            </div>}
         </nav>) :
             (
                 <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -177,12 +177,13 @@ const Navbar = () => {
                         </div>
                     </div>
                     {jwt === null && <div className='loginAndRegisterMobile'>
-                        <CartIcon cartIcon={cartIcon} cartList={listOfProducts} setShowCart={setShowCart}/>
+                        <CartIcon cartIcon={cartIcon} cartList={listOfProducts} setShowCart={setShowCart} />
                         <div className="navbar-language"><LanguageSelector /></div>
                         <Link to={"/login"}><button className='loginButton'>Sign In</button></Link>
                         <Link to={"/register"}><button className='registerButton'>Sign Up</button></Link>
                     </div>}
                     {jwt != null && decodedJwt != null && <div className='profileButtonsContainer'>
+                        <CartIcon cartIcon={cartIcon} cartList={listOfProducts} setShowCart={setShowCart} />
                         <div className="navbar-language"><LanguageSelector /></div>
                         <div className="dropdownprofile">
                             <div className="dropbtnprofile">
