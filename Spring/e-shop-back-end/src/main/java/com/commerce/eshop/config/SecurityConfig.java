@@ -106,6 +106,7 @@ public class SecurityConfig {
             requests.requestMatchers("/h2-console/**").permitAll();
             requests.requestMatchers("/api/products/**").permitAll();
             requests.requestMatchers("/api/category/").permitAll();
+            requests.requestMatchers("/api/candy/**").permitAll();
             requests.requestMatchers("/api/montonio/**").permitAll();
             requests.requestMatchers("/admin/**").hasRole("ADMIN");
             requests.requestMatchers("/user/").hasAnyRole("ADMIN", "USER");

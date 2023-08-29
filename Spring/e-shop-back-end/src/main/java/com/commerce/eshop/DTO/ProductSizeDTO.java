@@ -20,5 +20,7 @@ public class ProductSizeDTO {
     private UUID productId;
     private SizeDTO size;
     private Integer quantity;
-    private BigDecimal price;
+    private BigDecimal emptyPrice;
+
+    private BigDecimal fullPrice;
 }

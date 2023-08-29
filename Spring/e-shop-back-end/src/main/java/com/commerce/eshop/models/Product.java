@@ -35,7 +35,6 @@ public class Product {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "product")
     private List<ProductSize> productSizes;
 
-
     public Product(String name, String description, Category category) {
         this.name = name;
         this.description = description;

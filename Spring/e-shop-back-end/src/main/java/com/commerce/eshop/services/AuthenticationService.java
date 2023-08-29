@@ -6,6 +6,7 @@ import com.commerce.eshop.models.user.RefreshToken;
 import com.commerce.eshop.models.user.Role;
 import com.commerce.eshop.repository.RoleRepository;
 import com.commerce.eshop.repository.UserRepository;
+import com.nimbusds.jose.JOSEException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;

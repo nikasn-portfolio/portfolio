@@ -31,7 +31,8 @@ public class HelperMethods {
         ProductSizeDTO productSizeDTO = new ProductSizeDTO();
         productSizeDTO.setSize(convertToSizeDTO(productSize.getSize()));
         productSizeDTO.setQuantity(productSize.getQuantity());
-        productSizeDTO.setPrice(productSize.getPrice());
+        productSizeDTO.setEmptyPrice(productSize.getEmptyPrice());
+        productSizeDTO.setFullPrice(productSize.getFullPrice());
         productSizeDTO.setProductId(productSize.getProduct().getId());
         return productSizeDTO;
     }
