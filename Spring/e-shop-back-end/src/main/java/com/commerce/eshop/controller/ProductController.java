@@ -31,6 +31,14 @@ public class ProductController {
                 .collect(Collectors.toList());
         return productDTOs;
     }
+
+    @GetMapping("/product/{productId}")
+    public ProductDTO getAllProducts(@PathVariable UUID productId){
+        Product product = productService.getProductById(productId);
+        ProductDTO productDTO = HelperMethods.convertToProductDTO(product);
+        return productDTO;
+    }
+
     @GetMapping("/{categoryId}")
     public List<ProductDTO> getListOfProductsBelongsToCategory(@PathVariable UUID categoryId){
         List<Product> listOfProductsBelongsToCategory = productService.getListOfProductsBelongsToCategory(categoryId);

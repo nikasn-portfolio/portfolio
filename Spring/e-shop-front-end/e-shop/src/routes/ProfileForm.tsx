@@ -7,7 +7,7 @@ import lockIcon from '../images/loginForm/lock-closed-svgrepo-com.svg';
 import phoneIcon from '../images/loginForm/phone-svgrepo-com.svg'
 import { UserService } from "../services/UserService";
 import { AppContext } from "./Root";
-import { ProfileNotification } from "../domain/ProfileNotification";
+import { Notification } from "../domain/Notification";
 
 const ProfileForm = () => {
     const { username, userPhoneNumber, userFullname, setUserPhoneNumber } = useContext(AppContext);
@@ -15,7 +15,7 @@ const ProfileForm = () => {
     const [notification, setNotification] = useState({
         message: "",
         classname: ""
-    } as ProfileNotification);
+    } as Notification);
     const userService = new UserService();
     const [passwordData, setPasswordData] = useState({
         username: username,

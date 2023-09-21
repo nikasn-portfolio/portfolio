@@ -30,4 +30,7 @@ public class Candy {
         this.image = image;
         this.quantity = quantity;
     }
+
+    @OneToMany(mappedBy = "candy")
+    private List<OrderRow> orderRows;
 }

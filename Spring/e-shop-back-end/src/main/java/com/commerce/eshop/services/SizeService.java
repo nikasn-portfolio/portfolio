@@ -5,6 +5,8 @@ import com.commerce.eshop.repository.SizeRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @Transactional
 public class SizeService {
@@ -17,5 +19,9 @@ public class SizeService {
 
     public Size saveSize(Size size){
         return sizeRepository.save(size);
+    }
+
+    public Size findSizeById(UUID id){
+        return sizeRepository.findById(id).orElse(null);
     }
 }

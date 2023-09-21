@@ -1,4 +1,4 @@
-export interface ProfileNotification{
+export interface Notification{
     message: string,
     classname : string
 }

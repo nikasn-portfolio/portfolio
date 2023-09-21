@@ -69,7 +69,7 @@ public class TokenService {
 
         Instant currentTime = Instant.now();
         long currentTimeMillis = currentTime.toEpochMilli();
-        Instant plusTwoMinutes = currentTime.plusSeconds(120);
+        Instant plusTwoMinutes = currentTime.plusSeconds(1000);
         long plusTwoMinutesMillis = plusTwoMinutes.toEpochMilli();
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -158,6 +158,22 @@ public class TokenService {
         RefreshToken updatedRefreshToken = refreshTokenRepository.save(refreshTokenEntity);
 
         return new JwtResponse(jwtEncoder.encode(JwtEncoderParameters.from(newClaims)).getTokenValue(), updatedRefreshToken.getRefreshToken(), "");
+    }
+
+    public String extractUsernameFromToken(String jwtToken){
+        Claims claims = verifyToken(jwtToken);
+        return claims.get("sub").toString();
+    }
+
+    public Boolean validateToken(String token) {
+        Claims claims = verifyToken(token);
+        long issued = Long.parseLong(claims.get("iat").toString());
+        long expired = Long.parseLong(claims.get("exp").toString());
+        long currentTime = Instant.now().getEpochSecond();
+        if (currentTime > expired || currentTime < issued) {
+            return false;
+        }
+        return true;
     }
 
 }

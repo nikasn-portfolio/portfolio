@@ -45,7 +45,7 @@ public class AuthenticationService {
 
     public ApplicationUser registerUser(String username, String password, String firstName, String lastName, String phoneNumber){
         String encodedPassword = passwordEncoder.encode(password);
-        Role userRole = roleRepository.findByAuthority("USER").get();
+        Role userRole = roleRepository.findByAuthority("ROLE_USER").get();
         Set<Role> roles = new HashSet<>();
         if(userRepository.findByUsername(username).isPresent()){
             throw new RuntimeException("Email has been already registered");
@@ -77,7 +77,9 @@ public class AuthenticationService {
             JwtResponse jwtResponse = new JwtResponse(token, savedRefreshToken.getRefreshToken(), "");
             return jwtResponse;
         }catch (AuthenticationException e){
-            return new JwtResponse();
+            throw new RuntimeException("Error to authenticate");
+            //return new JwtResponse();
+
         }
     }
 

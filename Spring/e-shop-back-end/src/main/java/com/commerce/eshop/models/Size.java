@@ -19,10 +19,16 @@ public class Size {
     private UUID id;
     private String name;
 
+    private Integer candyLimit;
+
     @OneToMany(mappedBy = "size")
     private List<ProductSize> productSizes;
 
-    public Size(String name) {
+    @OneToMany(mappedBy = "size")
+    private List<OrderRow> orderRows;
+
+    public Size(String name, Integer candyLimit) {
         this.name = name;
+        this.candyLimit = candyLimit;
     }
 }

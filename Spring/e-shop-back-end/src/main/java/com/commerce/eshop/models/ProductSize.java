@@ -26,6 +26,7 @@ public class ProductSize {
     private Size size;
 
     private Integer quantity;
+
     private BigDecimal emptyPrice;
 
     private BigDecimal fullPrice;

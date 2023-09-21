@@ -4,6 +4,7 @@ import { MontonioBaseService } from "./MontonioBaseService";
 import Axios, { AxiosInstance } from 'axios';
 import { TransactionPayload } from "../domain/montonio/forPostTransaction/TransactionPayload";
 import { TransactionTokenObject } from "../domain/montonio/TransactionTokenObject";
+import { PaymentData } from "../domain/montonio/ForOrder/PaymentData";
 
 
 export class MontonioPaymentService extends MontonioBaseService{
@@ -78,12 +79,12 @@ export class MontonioPaymentService extends MontonioBaseService{
         }
     }
 
-    async getTransactionData(data : TransactionTokenObject): Promise<string | undefined> {
+    async getTransactionData(data : TransactionTokenObject): Promise<PaymentData | undefined> {
         try {
-            const response = await this.axios.post<string>('/orders', data);
+            const response = await this.axios.post<PaymentData>('/orders', data);
 
             console.log('response', response);
-            if (response.status === 200) {
+            if (response.status === 201) {
                 return response.data;
             }
             return undefined;

@@ -506,9 +506,10 @@ div.scroll-container img {
 }
 
 @media (max-width: 991px) {
-  .itemPageContainer{
+  .itemPageContainer {
     flex-direction: column;
   }
+
   .itemSizeSelector {
     width: calc(((var(--main-width) - 80px) / var(--productSizeSelector-li-items-mobile-row)) - 2.6px);
   }
@@ -1161,6 +1162,7 @@ div.scroll-container img {
 .cartImageAndTittleContainer,
 .cartCounterContainer,
 .cartSizeContainer,
+.cartCandyContainer,
 .cartPriceContainer {
   flex: 1;
   margin: 0;
@@ -1168,6 +1170,24 @@ div.scroll-container img {
   justify-content: center;
   align-items: center;
   gap: 10px;
+}
+
+
+
+.cartCandyImage {
+  width: 50px;
+  height: 50px;
+}
+
+.cartCandyName {
+  font-family: Domine;
+  font-size: 17px;
+  min-width: 100px;
+}
+
+.cartCandyQuantity {
+  font-family: Domine;
+  font-size: 17px;
 }
 
 .cartTitleContent {
@@ -1213,21 +1233,21 @@ div.scroll-container img {
 
 .input-group-checkout {
   position: relative;
-  text-align:start;
+  text-align: start;
   margin-top: 20px;
 }
 
-.checkout-button-submit{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 80%;
-  border: 1.2px solid black;
-  height: 40px;
+.checkout-button-submit {
+  display: flex ;
+  align-items: center ;
+  justify-content: center ;
+  width: 40% ;
+  border: 1.2px solid black ;
+  height: 40px ;
   margin-top: 20px;
 }
 
-.checkout-button-submit:hover{
+.checkout-button-submit:hover {
   background-color: #000;
   color: white;
 }
@@ -1261,26 +1281,26 @@ div.scroll-container img {
 }
 
 .input-group-checkout input:focus~label,
-.input-group-checkout input:valid~label{
+.input-group-checkout input:valid~label {
   top: 0;
   font-size: 12px;
   background: #fff;
 }
 
 
-.checkout-billing-form{
+.checkout-billing-form {
   width: 40%;
   margin-left: 20px;
   margin-top: 20px;
 }
 
-.checkout-billing-form-header{
+.checkout-billing-form-header {
   text-align: start;
   font-size: 16px;
   font-weight: bold;
 }
 
-.checkout-payment-grid-container{
+.checkout-payment-grid-container {
   display: flex;
   flex-wrap: wrap;
   background-color: #fff;
@@ -1290,7 +1310,11 @@ div.scroll-container img {
   margin-left: 20px;
 }
 
-.checkout-payment-grid-container div:nth-child(1){
+.bankingHeader{
+  width: 100%;
+}
+
+.checkout-payment-grid-container .bankChoiceHeader {
   display: flex;
   width: 100%;
   gap: 20px;
@@ -1298,11 +1322,26 @@ div.scroll-container img {
   flex-direction: column;
   margin-bottom: 20px;
 }
-.checkout-payment-grid-container div:nth-child(1) select{
+
+.checkout-payment-grid-container select {
   width: 50%;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex-direction: column;
+  margin-bottom: 20px;
 }
 
-.checkout-payment-grid-item{
+
+
+.checkoutButtonSubmiContainer {
+  width: 100%;
+}
+
+
+
+
+.checkout-payment-grid-item {
   border: 1px solid black;
   text-align: center;
   margin: 5px;
@@ -1310,20 +1349,20 @@ div.scroll-container img {
   background-color: #fff;
 }
 
-.checkout-payment-grid-item:hover{
+.checkout-payment-grid-item:hover {
   background-color: rgb(183, 183, 183);
 }
 
-.checkout-payment-grid-item-selected{
+.checkout-payment-grid-item-selected {
   background-color: rgb(183, 183, 183) !important;
 }
 
-.checkout-container{
+.checkout-container {
   display: flex;
   width: 100%;
 }
 
-.checkout-payment-img{
+.checkout-payment-img {
   max-width: 100%;
   max-height: 26px;
   margin: auto;
@@ -1331,30 +1370,32 @@ div.scroll-container img {
 }
 
 @media (max-width:526px) {
-  .checkout-container{
+  .checkout-container {
     flex-direction: column;
   }
 }
 
-.bankChoiceHeader{
+.bankChoiceHeader {
   font-size: 16px;
   font-family: Domine;
   font-weight: bold;
 }
 
-.bankHeaderError{
+.bankHeaderError {
   color: red;
 }
 
 /* Slideshow container */
 .slideshow-container {
   max-width: 540px;
-  position: relative;
-  margin: auto;
+  position: sticky;
+  margin-top: 70px;
+  align-self: center;
 }
 
 /* Next & previous buttons */
-.prev, .next {
+.prev,
+.next {
   cursor: pointer;
   position: absolute;
   top: 50%;
@@ -1376,8 +1417,9 @@ div.scroll-container img {
 }
 
 /* On hover, add a black background color with a little bit see-through */
-.prev:hover, .next:hover {
-  background-color: rgba(0,0,0,0.8);
+.prev:hover,
+.next:hover {
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 /* Caption text */
@@ -1412,7 +1454,8 @@ div.scroll-container img {
   transition: background-color 0.6s ease;
 }
 
-.active, .dot:hover {
+.active,
+.dot:hover {
   background-color: #717171;
 }
 
@@ -1423,15 +1466,144 @@ div.scroll-container img {
 }
 
 @keyframes fade {
-  from {opacity: 0.4} 
-  to {opacity: 1}
+  from {
+    opacity: 0.4
+  }
+
+  to {
+    opacity: 1
+  }
 }
 
 /* On smaller screens, decrease text size */
 @media only screen and (max-width: 300px) {
-  .prev, .next {font-size: 11px}
+
+  .prev,
+  .next {
+    font-size: 11px
+  }
 }
 
-.dot-container{
+.dot-container {
   text-align: center;
+}
+
+.candy-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 40px;
+
+}
+
+.candy-image {
+  width: 40px;
+  height: 40px;
+}
+
+.candy-title,
+.candy-stock {
+  font-family: Domine;
+  font-size: 16px;
+  min-width: 200px;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+
+.candy-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+@media (max-width : 560px) {
+  .candy-item {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+
+
+.itemSelectorButton {
+  margin-top: 10px;
+  height: calc(3.4rem);
+  background: #fff;
+  border: solid 0.0625rem #e4e4e4;
+  width: 45%;
+  padding: 0;
+}
+
+.itemSelectorButton:hover {
+  background: #000 !important;
+  color: white !important;
+}
+
+.itemSelectorButtonSelected {
+  background: #000 !important;
+  color: white !important;
+}
+
+
+
+.margin-left-right {
+  margin-left: 2.5%;
+  margin-right: 5%;
+}
+
+.margin-right {
+  margin-right: 2.5%;
+}
+
+.itemDescriptionContainer,.itemDescriptionItem,.itemCandiesContainer{
+  display: flex;
+  flex-direction: column;
+  min-width: 200px
+}
+
+.itemDescriptionContainer{
+  margin: 20px;
+  height: fit-content;
+
+}
+
+.itemDescriptionItem{
+  margin-bottom: 20px;
+  height: fit-content;
+  border: 1.3px solid black;
+  box-shadow: 2px 2px 5px 2px #888888;
+
+}
+
+
+.itemDescriptionImg{
+  margin-bottom: 10px;
+}
+
+.checkout-img {
+  width: 50%;
+}
+
+
+
+.itemDescriptionHeader{
+  display: flex;
+  flex-direction: row;
+  border-top: 1.3px solid black;
+  padding: 5px;
+  font-family: Domine;
+  font-size: 15px;
+}
+
+.candyItem{
+  font-family: Domine;
+  font-size: 15px;
+  margin: 5px;
 }

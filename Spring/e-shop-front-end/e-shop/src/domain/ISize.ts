@@ -1,4 +1,5 @@
 export interface ISize{
     id: string,
-    name: string
+    name: string,
+    candyLimit: number
 }

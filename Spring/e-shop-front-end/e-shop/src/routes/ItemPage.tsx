@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ButtonTemplate from "../components/ButtonTemplate";
 import { IItemCard } from "../domain/IItemCard";
 import image_not_found from '../images/test_cat_img.png';
@@ -10,6 +10,10 @@ import { IProduct } from "../domain/IProduct";
 import { IItem } from "../domain/IItem";
 import { ICandy } from "../domain/ICandy";
 import { CandyService } from "../services/CandyService";
+import { ProductService } from "../services/ProductService";
+import { HelperMethods } from "../helpers/Helpers";
+import { CandyItem } from "../components/CandyItem";
+import { Notification } from "../domain/Notification";
 
 
 
@@ -17,13 +21,65 @@ import { CandyService } from "../services/CandyService";
 const ItemPage = () => {
     const { cartList, setCartList, isScreenSmall } = useContext(AppContext)
     const [selectedSizeId, setSelectedSizeId] = useState("")
+    const [notEmptySelected, setNotEmptySelected] = useState(null as boolean | null);
     const location = useLocation();
-    const { cardProps } = location.state as { cardProps: IProduct };
-    const [price, setPrice] = useState(Math.min(...cardProps.productSizes.filter(productSize => productSize.quantity > 0).map(productSize => productSize.price)));
+    const { id } = useParams();
+    const [cardProps, setCardProps] = useState({} as IProduct);
+    const [price, setPrice] = useState(0);
     const [slideIndex, setSlideIndex] = useState(1);
     const [touchStartX, setTouchStartX] = useState(0);
     const [touchEndX, setTouchEndX] = useState(0);
     const [listOfCandies, setListOfCandies] = useState([] as ICandy[]);
+    const navigate = useNavigate();
+    const [selectedCandiesList, setSelectedCandiesList] = useState([] as ICandy[])
+    const [quantity, setQuantity] = useState(0);
+    const [candiesLimit, setCandiesLimit] = useState(0);
+    const [notification, setNotification] = useState({
+        message: "",
+        classname: ""
+    } as Notification);
+
+
+    useEffect(() => {
+        console.log("useEffect running...");
+        const getProducts = async () => {
+            console.log("Fetching product...");
+            console.log(id);
+            const product = await new ProductService().getProductById(id as string);
+            if (product != undefined) {
+                setCardProps(product);
+            } else {
+                navigate("/home");
+
+            }
+        };
+
+        getProducts();
+    }, [id]);
+
+    useEffect(() => {
+        if (cardProps.productSizes && cardProps.productSizes.length > 0) {
+            console.log(cardProps);
+            const validPrices = cardProps.productSizes.filter(productSize => productSize.quantity > 0).map(productSize => productSize.emptyPrice);
+            if (validPrices.length > 0) {
+                console.log(validPrices);
+                const minPrice = Math.min(...validPrices);
+                console.log(minPrice);
+                setPrice(minPrice);
+            }
+        }
+    }, [cardProps.productSizes]);
+
+
+
+
+
+
+
+
+
+
+
 
     const handleSizeSelectorClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         const selectedButton = document.querySelector(".itemSizeSelectorButtonSelected");
@@ -36,20 +92,75 @@ const ItemPage = () => {
         clickedButton.classList.add("itemSizeSelectorButtonSelected");
         setPrice(cardProps.productSizes.filter(productSize => productSize.size.id === event.currentTarget.id)[0].emptyPrice);
         setSelectedSizeId(clickedButton.id);
+        if (notEmptySelected !== null) {
+            setNotEmptySelected(null);
+        }
+        const selectedButtonOption = document.querySelector(".itemSelectorButtonSelected")
+        if (selectedButtonOption !== null) {
+            selectedButtonOption.classList.remove("itemSelectorButtonSelected");
+        }
     };
-    // TODO: Add a request for card data by id
+
+    const handleTypeSelector = (event: React.MouseEvent<HTMLButtonElement>) => {
+        if (event.currentTarget.id === "empty") {
+            setQuantity(0);
+            setCandiesLimit(0);
+            setSelectedCandiesList([] as ICandy[]);
+            setPrice(cardProps.productSizes.find(productSize => productSize.size.id === selectedSizeId)!.emptyPrice)
+        }
+        if (event.currentTarget.id === "full") {
+            setQuantity(0);
+            setCandiesLimit(cardProps.productSizes.filter(productSize => productSize.size.id === selectedSizeId)[0].size.candyLimit);
+            setPrice(cardProps.productSizes.find(productSize => productSize.size.id === selectedSizeId)!.fullPrice)
+        }
+        const selectedButton = document.querySelector(".itemSelectorButtonSelected")
+        if (selectedButton !== null) {
+            selectedButton.classList.remove("itemSelectorButtonSelected");
+        }
+        const clickedButton = event.currentTarget;
+        clickedButton.classList.add("itemSelectorButtonSelected");
+        if (event.currentTarget.id === "full") {
+            setNotEmptySelected(true);
+        } else {
+            setNotEmptySelected(false);
+        }
+
+    }
 
     const handleAddToCartClick = () => {
         if (selectedSizeId == "") {
+            //make return warning
+            setNotification((prevNotification) => ({
+                ...prevNotification,
+                message: "Size is not selected",
+                classname: "red"
+            }))
             return;
         }
+        if (notEmptySelected == null) {
+            setNotification((prevNotification) => ({
+                ...prevNotification,
+                message: "Choose option empty / with candies",
+                classname: "red"
+            }))
+            return;
+        }
+        if (candiesLimit !== quantity) {
+            setNotification((prevNotification) => ({
+                ...prevNotification,
+                message: "You need to add more candies to reach limit",
+                classname: "red"
+            }))
+            return
+        }
         //&& item.item.size == cardProps.size also check size
-        const itemInCart = cartList.find(item => item.item.id === cardProps.id && item.item.sizeId === selectedSizeId);
-        const copyOfProduct = JSON.parse(JSON.stringify(cardProps)) as IProduct;;
+        const itemInCart = cartList.find(item => item.item.id === cardProps.id && item.item.sizeId === selectedSizeId && item.item.candies === selectedCandiesList);
+        const copyOfProduct = JSON.parse(JSON.stringify(cardProps)) as IProduct;
         console.log(selectedSizeId);
         console.log(copyOfProduct.productSizes)
         console.log(copyOfProduct.productSizes.filter(productSize => productSize.size.id === selectedSizeId));
         copyOfProduct.productSizes = copyOfProduct.productSizes.filter(productSize => productSize.size.id === selectedSizeId);
+
         const itemForCart = convertToIItem(copyOfProduct);
 
 
@@ -68,6 +179,11 @@ const ItemPage = () => {
 
         }
         localStorage.setItem("cartExpired", (Math.floor(Date.now() / 1000) + 5).toString());
+        setNotification((prevNotification) => ({
+            ...prevNotification,
+            message: "Succesfully added to cart!",
+            classname: "green"
+        }))
     }
 
 
@@ -90,8 +206,9 @@ const ItemPage = () => {
             name: product.name,
             sizeId: product.productSizes[0].size.id,
             sizeName: product.productSizes[0].size.name,
+            candies: selectedCandiesList,
             image: product.images[0].image,
-            price: product.productSizes[0].price
+            price: price
         };
     }
 
@@ -128,17 +245,17 @@ const ItemPage = () => {
 
     useEffect(() => {
         const getCandies = async () => {
-           const candies =  await new CandyService().getAllCandies();
-           if(candies !== undefined){
-            setListOfCandies(candies);
-           }
+            const candies = await new CandyService().getAllCandies();
+            if (candies !== undefined) {
+                setListOfCandies(candies);
+            }
         }
         getCandies();
     }, [])
 
     useEffect(() => {
         showSlides(); // Call your function with the updated slideNumber
-    }, []);
+    }, [cardProps.images]);
 
     useEffect(() => {
         showSlides();
@@ -177,15 +294,37 @@ const ItemPage = () => {
             setSlideIndex(slideIndex + 1);
             setTouchEndX(0)
             setTouchStartX(0)
-            
+
         }
     };
 
+    useEffect(() => {
+        console.log(selectedCandiesList);
+    }, [selectedCandiesList])
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setNotification((prevNotification) => ({
+                ...prevNotification,
+                message: "",
+                classname: ""
+            }))
+        }, 4000);
+        return () => clearTimeout(timer);
+    }, [notification]);
+
+
+
     return (
         <>
-
-            <div className="itemPageContainer">
-                <div className="slideshow-container" onTouchStart={handleTouchStart}
+            {cardProps.images && cardProps.name && cardProps.productSizes && (
+            <>
+                <div className="profileNotificationContainer">
+                    <div className={`profileNotificationContent ${notification.classname}`}>{notification.message}</div>
+                </div>
+                <div className="itemPageContainer">
+                
+                {cardProps.images && (<div className="slideshow-container" onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}>
 
@@ -215,7 +354,7 @@ const ItemPage = () => {
                         <span className="dot" onClick={() => currentSlide(3)} ></span>
                     </div>
 
-                </div>
+                </div>)}
 
 
 
@@ -241,6 +380,18 @@ const ItemPage = () => {
 
                         ))}
                     </div>
+                    {selectedSizeId && 
+                        <div>
+                            <button className="itemSelectorButton margin-left-right" id="empty" onClick={handleTypeSelector}>Empty</button>
+                            <button className="itemSelectorButton margin-right" id="full" onClick={handleTypeSelector}>With candies</button>
+                        </div>}
+                    {selectedSizeId && notEmptySelected &&
+                        <div className="candy-container">
+                            <div className="candy-header">{quantity} / {candiesLimit}</div>
+                            {listOfCandies.map(candy => (
+                                <CandyItem candy={candy} quantity={quantity} updateQuantity={setQuantity} limit={candiesLimit} candyList={selectedCandiesList} setNewCandyList={setSelectedCandiesList}></CandyItem>
+                                ))}
+                        </div>}
                     <div className="addToCartButtonContainer">
                         <ButtonTemplate onClick={handleAddToCartClick} text="Add to cart" />
                     </div>
@@ -254,8 +405,13 @@ const ItemPage = () => {
                     </div>
                 </div>
             </div>
+            </>
+                    
+            
+            
 
 
+            )}
         </>
     );
 

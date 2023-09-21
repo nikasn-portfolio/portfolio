@@ -31,7 +31,7 @@ const ProductListPage = () => {
         image: 'image',
     } as IItemCard)
 
-    const element = document.getElementById('main');
+    /*const element = document.getElementById('main');
     if (element !== null) {
         HelperMethods.setAmountOfProductInRow(element);
     }
@@ -43,7 +43,7 @@ const ProductListPage = () => {
             
             HelperMethods.setAmountOfProductInRow(element);
         }
-    };
+    };*/
 
     useEffect(() => {
         console.log("useEffect running...");

@@ -45,7 +45,7 @@ const router = createBrowserRouter([
           element: <ItemPage></ItemPage>, 
         },
         {
-          path: "/profile/:id",
+          path: "/profile",
           element: <ProfileForm></ProfileForm>
         },
         {

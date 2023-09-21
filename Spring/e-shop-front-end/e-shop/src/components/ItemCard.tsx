@@ -16,7 +16,7 @@ export const ItemCard = (props: Props) => {
     const navigate = useNavigate();
 
     const handleClick = () => {
-        navigate('/product/' + props.product.id, { state: { cardProps: props.product } });
+        navigate('/product/' + props.product.id);
     };
     return (
         <div className="page-card">

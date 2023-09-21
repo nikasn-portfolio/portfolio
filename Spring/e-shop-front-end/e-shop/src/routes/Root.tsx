@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { CrossLine } from "../components/CrossLine";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
@@ -50,6 +50,9 @@ const Root = () => {
     const [showCart, setShowCart] = useState(false as boolean | null);
 
     const navigate = useNavigate();
+    const location = useLocation();
+    const currentPath = location.pathname;
+
 
 
     useEffect(() => {
@@ -61,7 +64,13 @@ const Root = () => {
             setCartList(JSON.parse(localStorage.getItem("cartList") as string) as ICartItem[]);
         }
         console.log(localStorage.getItem("lang"));
-        navigate(`/home/?lang=${localStorage.getItem("lang") === null ? "en" : localStorage.getItem("lang")}`);
+        console.log(currentPath)
+        if (currentPath === "/") {
+            navigate(`/home/?lang=${localStorage.getItem("lang") === null ? "en" : localStorage.getItem("lang")}`);
+        } else {
+            navigate(`${currentPath}`);
+        }
+
     }, []);
 
     useEffect(() => {
@@ -110,8 +119,12 @@ const Root = () => {
     const handleCartButtonClick = () => {
         navigate("/checkout")
         setShowCart(false);
-        
+
     }
+
+    useEffect(() => {
+        console.log(cartList)
+    },[showCart])
 
     return (
         <>
@@ -135,6 +148,22 @@ const Root = () => {
                                                 Size : {item.item.sizeName}
                                             </div>
                                         </div>
+                                        {item.item.candies.length === 0 ? 
+                                            <div className="cartCandyName">Empty</div> 
+                                            : 
+                                            item.item.candies.map(candy =>
+                                                <div className="candy-item">
+                                                    <div className="cartCandyImage">
+                                                        <img src={candy.image} alt="" className="cartCandyImage" />
+                                                    </div>
+                                                    <div className="cartCandyName">
+                                                        {candy.name}
+                                                    </div>
+                                                    <div className="cartCandyQuantity">
+                                                        {candy.quantity}g
+                                                    </div>
+                                                </div>
+                                        )}
                                         <div className="cartPriceContainer">
                                             <div className="cartPriceContent">
                                                 Price : {item.item.price}
@@ -151,7 +180,7 @@ const Root = () => {
                             ))}
 
                         </div>
-                        <button className="cartButton"  onClick={handleCartButtonClick} ><span className="cartButtonContent">Total: {cartList.reduce((total, item) => total + item.totalItemPrice, 0)}€</span></button>
+                        <button className="cartButton" onClick={handleCartButtonClick} ><span className="cartButtonContent">Total: {cartList.reduce((total, item) => total + item.totalItemPrice, 0)}€</span></button>
                     </div>
                     ) :
                         (

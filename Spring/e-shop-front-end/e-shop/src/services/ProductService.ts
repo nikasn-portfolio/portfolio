@@ -19,4 +19,19 @@ export class ProductService extends BaseService {
             return undefined;
         }
     }
+
+    async getProductById(data : string): Promise<IProduct | undefined>{
+        try {
+            const response = await this.axios.get<IProduct>('/product/' + data);
+
+            console.log('response', response);
+            if (response.status === 200) {
+                return response.data;
+            }
+            return undefined;
+        } catch (e) {
+            console.log('error: ', (e as Error).message);
+            return undefined;
+        }
+    }
 }

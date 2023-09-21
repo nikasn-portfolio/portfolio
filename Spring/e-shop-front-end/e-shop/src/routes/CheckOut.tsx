@@ -8,17 +8,19 @@ import { PaymentMethod } from "../domain/montonio/ForGetBanks/PaymentMethod";
 import { TransactionTokenObject } from "../domain/montonio/TransactionTokenObject";
 import { LineItem } from "../domain/montonio/forPostTransaction/LineItem";
 import { t } from "i18next";
+import { OrderService } from "../services/OrderService";
 
 
 const CheckOut = () => {
     const { cartList, setCartList, isScreenSmall } = useContext(AppContext)
     const [bankCountry, setBankCountry] = useState("EE");
+    const [bankName, setBankName] = useState(null as string | null);
     const [billingErrors, setBillingErrors] = useState<{ [key: string]: boolean }>({});
     const initialTransactionPayload: TransactionPayload = {
         accessKey: "",
-        merchantReference: "",
+        merchantReference: "18d8c770-06d8-4f4f-b9a5-18eb7808dc26",
         returnUrl: "https://localhost:3000/payment/return",
-        notificationUrl: "",
+        notificationUrl: "https://mystore.com/payment/notify",
         currency: "EUR",
         grandTotal: cartList.reduce((total, item) => total + item.totalItemPrice, 0),
         locale: "et",
@@ -42,14 +44,15 @@ const CheckOut = () => {
             country: "EE",
             postalCode: "",
         },
-        lineItems: cartList.map(cartItem => { const lineItem : LineItem = {
-                    name : cartItem.item.name,
-                    quantity : cartItem.quantity,
-                    finalPrice : cartItem.totalItemPrice
-                }
-             return lineItem;
+        lineItems: cartList.map(cartItem => {
+            const lineItem: LineItem = {
+                name: cartItem.item.name,
+                quantity: cartItem.quantity,
+                finalPrice: cartItem.totalItemPrice
             }
-    ),
+            return lineItem;
+        }
+        ),
         payment: {
             method: "paymentInitiation",
             methodDisplay: "Pay with your bank",
@@ -68,14 +71,14 @@ const CheckOut = () => {
     const [transactionPayload, setTransactionPayload] = useState(initialTransactionPayload);
 
     const token = jwtToken.sign(
-        transactionPayload, 
+        transactionPayload,
         'IMxt0/r2Ib2iUnc96xQVrxXYSNTBec5NmanBS5Q7ybmd',
         { algorithm: 'HS256', expiresIn: '10m' }
     );
 
     useEffect(() => {
         console.log(token);
-    },[transactionPayload])
+    }, [transactionPayload])
 
     useEffect(() => {
         const fetchMontonioData = async () => {
@@ -95,37 +98,39 @@ const CheckOut = () => {
         console.log(transactionPayload)
     }, [transactionPayload])
 
-    
 
-    const handleBillingAndShippingAddress = (event : React.ChangeEvent<HTMLInputElement>) => {
-        if(event.target.name === "email" && (event.target.value.length === 0 || !event.target.value.includes("@"))){
-            setTransactionPayload(prevPayload => ({...prevPayload, 
+
+    const handleBillingAndShippingAddress = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.name === "email" && (event.target.value.length === 0 || !event.target.value.includes("@"))) {
+            setTransactionPayload(prevPayload => ({
+                ...prevPayload,
                 billingAddress: {
-                ...prevPayload.billingAddress, [event.target.name] : event.target.value
+                    ...prevPayload.billingAddress, [event.target.name]: event.target.value
                 },
-                shippingAddress:{
-                    ...prevPayload.shippingAddress, [event.target.name] : event.target.value
+                shippingAddress: {
+                    ...prevPayload.shippingAddress, [event.target.name]: event.target.value
                 }
             }))
             return;
         }
-        setBillingErrors(prevErrors => ({...prevErrors, [event.target.name] : false}));
-        setTransactionPayload(prevPayload => ({...prevPayload, 
+        setBillingErrors(prevErrors => ({ ...prevErrors, [event.target.name]: false }));
+        setTransactionPayload(prevPayload => ({
+            ...prevPayload,
             billingAddress: {
-            ...prevPayload.billingAddress, [event.target.name] : event.target.value
+                ...prevPayload.billingAddress, [event.target.name]: event.target.value
             },
-            shippingAddress:{
-                ...prevPayload.shippingAddress, [event.target.name] : event.target.value
+            shippingAddress: {
+                ...prevPayload.shippingAddress, [event.target.name]: event.target.value
             }
         }))
     }
 
-    const handlePaymentOptionClick = (event: React.MouseEvent<HTMLDivElement>, paymentMethod : PaymentMethod) => {
+    const handlePaymentOptionClick = (event: React.MouseEvent<HTMLDivElement>, paymentMethod: PaymentMethod) => {
         const bankHeaderText = document.querySelector(".bankHeaderError");
-            if(bankHeaderText !== null){
-                bankHeaderText.classList.remove("bankHeaderError");
-            }
-        
+        if (bankHeaderText !== null) {
+            bankHeaderText.classList.remove("bankHeaderError");
+        }
+
         const selectedButton = document.querySelector(".checkout-payment-grid-item-selected");
 
         if (selectedButton !== null) {
@@ -134,10 +139,10 @@ const CheckOut = () => {
 
         const clickedButton = event.currentTarget;
         clickedButton.classList.add("checkout-payment-grid-item-selected");
-        
+
         setTransactionPayload(prevPayload => ({
-            ...prevPayload, 
-            payment : {
+            ...prevPayload,
+            payment: {
                 ...prevPayload.payment,
                 methodOptions: {
                     ...prevPayload.payment.methodOptions,
@@ -145,6 +150,8 @@ const CheckOut = () => {
                 }
             }
         }))
+
+        setBankName(paymentMethod.name);
 
     }
 
@@ -158,74 +165,98 @@ const CheckOut = () => {
     }
 
     const handlePaymentTransactionSubmit = async () => {
-        if(transactionPayload.billingAddress.firstName.length === 0){
+        let errorsCounter = 0;
+        if (transactionPayload.billingAddress.firstName.length === 0) {
+            errorsCounter++;
             setBillingErrors(prevErrors => ({
                 ...prevErrors,
                 firstName: true
             }));
         }
-        if(transactionPayload.billingAddress.lastName.length === 0){
+        if (transactionPayload.billingAddress.lastName.length === 0) {
+            errorsCounter++;
             setBillingErrors(prevErrors => ({
                 ...prevErrors,
                 lastName: true,
-              }));
+            }));
         }
-        if(transactionPayload.billingAddress.email.length === 0 || !transactionPayload.billingAddress.email.includes("@")){
+        if (transactionPayload.billingAddress.email.length === 0 || !transactionPayload.billingAddress.email.includes("@")) {
+            errorsCounter++;
             setBillingErrors(prevErrors => ({
                 ...prevErrors,
                 email: true,
-              })); 
+            }));
         }
-        if(transactionPayload.billingAddress.addressLine1.length === 0){
+        if (transactionPayload.billingAddress.addressLine1.length === 0) {
+            errorsCounter++;
             setBillingErrors(prevErrors => ({
                 ...prevErrors,
                 addressLine1: true,
-              })); 
+            }));
         }
-        if(transactionPayload.billingAddress.locality.length === 0){
+        if (transactionPayload.billingAddress.locality.length === 0) {
+            errorsCounter++;
             setBillingErrors(prevErrors => ({
                 ...prevErrors,
                 locality: true,
-              })); 
+            }));
         }
-        if(transactionPayload.billingAddress.region.length === 0){
+        if (transactionPayload.billingAddress.region.length === 0) {
+            errorsCounter++;
             setBillingErrors(prevErrors => ({
                 ...prevErrors,
                 region: true,
-              })); 
+            }));
         }
-        if(transactionPayload.billingAddress.postalCode.length === 0){
+        if (transactionPayload.billingAddress.postalCode.length === 0) {
+            errorsCounter++;
             setBillingErrors(prevErrors => ({
                 ...prevErrors,
                 postalCode: true,
-              })); 
+            }));
         }
-        if(transactionPayload.payment.methodOptions.preferredProvider === ""){
+        if (transactionPayload.payment.methodOptions.preferredProvider === "") {
+            errorsCounter++;
             const bankHeaderText = document.querySelector(".bankChoiceHeader");
-            if(bankHeaderText !== null){
+            if (bankHeaderText !== null) {
                 bankHeaderText.classList.add("bankHeaderError");
             }
         }
-        if(Object.keys(billingErrors).length > 0){
+        if (errorsCounter > 0) {
+            console.log(errorsCounter);
+            console.log("return")
             return;
         }
         const token = await new MontonioPaymentService().getTransactionToken(transactionPayload);
-        if(token !== undefined){
-            const transactionToken : TransactionTokenObject = {data : token}
-        }
+        console.log(token);
         
+        if (token !== undefined) {
+            const transactionToken: TransactionTokenObject = { data: token };
+            const orderData = await new MontonioPaymentService().getTransactionData(transactionToken);
+            console.log(orderData);
+            const updatedPayload = { ...orderData, bankName: bankName, orderRow: cartList };
+            console.log(updatedPayload);
+            if(orderData !== undefined){
+                const order = await new OrderService().saveOrder(updatedPayload);
+            }
+
+            // get order and save it somehow
+            //const orderData = 
+        }
+
+
     }
 
-    
 
-    
+
+
 
     return (
         <div className="checkout-container">
             <div className="checkout-billing-form">
                 <div className="checkout-billing-form-header">Billing form:</div>
                 <div className="input-group-checkout">
-                    <input type="text" name="firstName" className={`${billingErrors["firstName"] === true ? "input-error" : ""}`} onChange={e => handleBillingAndShippingAddress(e)}/>
+                    <input type="text" name="firstName" className={`${billingErrors["firstName"] === true ? "input-error" : ""}`} onChange={e => handleBillingAndShippingAddress(e)} />
                     <label htmlFor="">Firstname</label>
                 </div>
                 <div className="input-group-checkout">
@@ -237,7 +268,7 @@ const CheckOut = () => {
                     <label htmlFor="">Email</label>
                 </div>
                 <div className="input-group-checkout">
-                    <input type="text" placeholder="Kai 1-12" name="addressLine1" className={`${billingErrors["addressLine1"] === true ? "input-error" : ""}`} onChange={e => handleBillingAndShippingAddress(e)}/>
+                    <input type="text" placeholder="Kai 1-12" name="addressLine1" className={`${billingErrors["addressLine1"] === true ? "input-error" : ""}`} onChange={e => handleBillingAndShippingAddress(e)} />
                     <label htmlFor="">Address</label>
                 </div>
                 <div className="input-group-checkout">
@@ -252,10 +283,24 @@ const CheckOut = () => {
                     <input type="text" placeholder="13515" name="postalCode" className={`${billingErrors["postalCode"] === true ? "input-error" : ""}`} onChange={e => handleBillingAndShippingAddress(e)} />
                     <label htmlFor="">Postal code</label>
                 </div>
-                <div className="checkout-button-submit" onClick={handlePaymentTransactionSubmit}>Submit</div>
+                {transactionPayload.grandTotal >= 50 && transactionPayload.billingAddress.locality === "Tallinn" &&
+            
+                (<div className="check-out-delivery-info">
+                    <div className="delivery-info-header">Delivery info:</div>
+                    <div className="delivery-info-text">Free delivery in Tallinn for orders over 50€ ! We will contact you as soon as product will be finished.</div>
+                </div>)
+                }
+                {transactionPayload.grandTotal < 50 &&
+            
+                (<div className="check-out-delivery-info">
+                    <div className="delivery-info-header">Delivery info:</div>
+                    <div className="delivery-info-text">Orders below than 50€ have no free shipping by us.</div>
+                    <input type="checkbox" />
+                </div>)
+                }
             </div>
             <div className="checkout-payment-grid-container">
-                <div>
+                <div className="bankingHeader">
                     <div className="bankChoiceHeader">Choose your bank</div>
                     <select onChange={e => handleCountryBankChange(e)}>
                         <option value="EE">Estonia</option>
@@ -271,7 +316,42 @@ const CheckOut = () => {
                         <img src={method.logoUrl} alt="" className="checkout-payment-img" />
                     </div>
                 )}
+                <div className="checkoutButtonSubmiContainer">
+                    <div className="checkout-button-submit" onClick={handlePaymentTransactionSubmit}>Submit</div>
+                </div>
+                
 
+
+            </div>
+            <div className="itemDescriptionContainer">
+                
+                    {cartList.map(cartItem => (
+                        <>
+                        <div className="itemDescriptionItem">
+                        <div className="itemDescriptionImg"><img className="checkout-img" src={cartItem.item.image} alt="" /></div>
+                        <div className="itemDescriptionHeader">Item : {cartItem.item.name}</div>
+                        <div className="itemDescriptionHeader">Quantity : {cartItem.quantity}</div>
+                        <div className="itemDescriptionHeader">Price : {cartItem.totalItemPrice}</div>
+                        <div className="itemCandiesContainer">
+                            <div className="itemDescriptionHeader">Candies :</div>
+                            {cartItem.item.candies.length === 0 
+                            ? 
+                            <div className="candyItem">No candies</div> 
+                            : 
+                            cartItem.item.candies.map(candy =>(
+                                <div className="candyItem">
+                                    <div className="candyItemName">{candy.name}</div>
+                                    <div className="candyItemPrice">{candy.quantity}g</div>
+                                </div>
+                            ))}
+                            
+                        </div>
+                        
+
+                        </div>
+                        </>
+                    ))}
+                    
             </div>
         </div>
 

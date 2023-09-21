@@ -10,6 +10,7 @@ import useOutsideClick from './useOutsideClick';
 import cartIcon from '../images/cartIcon.png'
 import { CartIcon } from './CartIcon';
 import { ICartItem } from '../domain/ICartItem';
+import { HelperMethods } from '../helpers/Helpers';
 
 const Navbar = () => {
     const { jwt, setJwt, username, setUsername, setUserPhoneNumber, setUserFullname, cartList, setShowCart } = useContext(AppContext);
@@ -17,6 +18,20 @@ const Navbar = () => {
     const { isScreenSmall, setIsScreenSmall } = useContext(AppContext);
     const [decodedJwt, setDecodedJwt] = useState() as any;
     const [listOfProducts, setListOfProducts] = useState([] as ICartItem[])
+
+    const element = document.getElementById('main');
+    if (element !== null) {
+        HelperMethods.setAmountOfProductInRow(element);
+    }
+    window.onresize = function () {
+
+        const element = document.getElementById('main');
+        if (element !== null) {
+            
+            HelperMethods.setAmountOfProductInRow(element);
+        }
+    };
+
     useEffect(() => {
         if (jwt != null) {
             let decodedJwt = jwt_decode(jwt.jwt) as any

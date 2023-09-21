@@ -1,5 +1,6 @@
 package com.commerce.eshop.config;
 
+import com.commerce.eshop.services.TokenService;
 import com.commerce.eshop.utils.RSAKeyProperties;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -14,6 +15,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -30,6 +33,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -40,6 +44,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(jsr250Enabled = true)
 public class SecurityConfig {
 
     private final RSAKeyProperties keys;
@@ -65,6 +70,11 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
+    }
+
+    @Bean
+    public AuthJwtFilter authenticationJwtTokenFilter() {
+        return new AuthJwtFilter();
     }
 
     @Bean
@@ -107,13 +117,16 @@ public class SecurityConfig {
             requests.requestMatchers("/api/products/**").permitAll();
             requests.requestMatchers("/api/category/").permitAll();
             requests.requestMatchers("/api/candy/**").permitAll();
+            requests.requestMatchers("/api/orders/**").permitAll();
+            //requests.requestMatchers("/api/montonio/**").authenticated();
             requests.requestMatchers("/api/montonio/**").permitAll();
             requests.requestMatchers("/admin/**").hasRole("ADMIN");
             requests.requestMatchers("/user/").hasAnyRole("ADMIN", "USER");
             requests.anyRequest().authenticated();
 
         });
-        http.oauth2ResourceServer( (c) -> c.jwt((jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter()))));
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        //http.oauth2ResourceServer( (c) -> c.jwt((jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter()))));
         /*http.oauth2Login(Customizer.withDefaults());
         http.logout( (c) -> c.addLogoutHandler(keycloakLogoutHandler).logoutSuccessUrl("/"));*/
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

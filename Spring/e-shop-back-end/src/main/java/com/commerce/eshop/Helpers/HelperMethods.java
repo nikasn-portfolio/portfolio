@@ -24,7 +24,42 @@ public class HelperMethods {
         SizeDTO sizeDTO = new SizeDTO();
         sizeDTO.setId(size.getId());
         sizeDTO.setName(size.getName());
+        sizeDTO.setCandyLimit(size.getCandyLimit());
         return sizeDTO;
+    }
+
+    public static CandyDTO convertToCandyDTO(Candy candy){
+        CandyDTO candyDTO = new CandyDTO();
+        candyDTO.setId(candy.getId());
+        candyDTO.setName(candy.getName());
+        candyDTO.setImage(candy.getImage());
+        candyDTO.setQuantity(candy.getQuantity());
+        return candyDTO;
+    }
+
+    public static OrderRowDTO convertToOrderRowDTO(OrderRow orderRow){
+        OrderRowDTO orderRowDTO = new OrderRowDTO();
+        orderRowDTO.setId(orderRow.getId());
+        orderRowDTO.setProduct(convertToProductDTO(orderRow.getProduct()));
+        orderRowDTO.setSize(convertToSizeDTO(orderRow.getSize()));
+        orderRowDTO.setCandy(convertToCandyDTO(orderRow.getCandy()));
+        orderRowDTO.setQuantity(orderRow.getQuantity());
+        return orderRowDTO;
+    }
+
+    public static OrderDTO convertToOrderDTO(Order order){
+        OrderDTO orderDTO = new OrderDTO();
+        //add user id
+        orderDTO.setId(order.getId());
+        orderDTO.setStatus(order.getStatus());
+        orderDTO.setCreatedAt(order.getCreatedAt());
+        orderDTO.setPrice(order.getPrice());
+        orderDTO.setIsDone(order.getIsDone());
+        orderDTO.setBankName(order.getBankName());
+        orderDTO.setPaymentUrl(order.getPaymentUrl());
+        orderDTO.setName(order.getName());
+        orderDTO.setOrderRows(order.getOrderRows().stream().map(HelperMethods::convertToOrderRowDTO).toList());
+        return orderDTO;
     }
 
     public static ProductSizeDTO convertToProductSizeDTO(ProductSize productSize) {

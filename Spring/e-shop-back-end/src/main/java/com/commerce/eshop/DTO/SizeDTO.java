@@ -11,4 +11,6 @@ import java.util.UUID;
 public class SizeDTO {
     private UUID id;
     private String name;
+
+    private Integer candyLimit;
 }

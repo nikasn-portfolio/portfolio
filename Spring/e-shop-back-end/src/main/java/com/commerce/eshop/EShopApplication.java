@@ -33,8 +33,8 @@ public class EShopApplication {
 						  ProductSizeService productSizeService, ImageService imageService, SizeService sizeService, CandyService candyService){
 		 return args -> {
 			 if(roleRepository.findByAuthority("ADMIN").isPresent()) return;
-			 Role adminRole = roleRepository.save(new Role("ADMIN"));
-			 roleRepository.save(new Role("USER"));
+			 Role adminRole = roleRepository.save(new Role("ROLE_ADMIN"));
+			 roleRepository.save(new Role("ROLE_USER"));
 
 			 Set<Role> roles = new HashSet<>();
 			 roles.add(adminRole);
@@ -63,9 +63,9 @@ public class EShopApplication {
 
 			 //Add sizes
 
-			 Size sizeTest1 = sizeService.saveSize(new Size("S"));
-			 Size sizeTest2 = sizeService.saveSize(new Size("M"));
-			 Size sizeTest3 = sizeService.saveSize(new Size("L"));
+			 Size sizeTest1 = sizeService.saveSize(new Size("S", 300));
+			 Size sizeTest2 = sizeService.saveSize(new Size("M", 500));
+			 Size sizeTest3 = sizeService.saveSize(new Size("L", 700));
 
 			 //Add product sizes
 			 ProductSizeId productSizeId = new ProductSizeId(productTest1.getId(), sizeTest1.getId());
