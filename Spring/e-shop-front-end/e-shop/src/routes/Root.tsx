@@ -23,12 +23,15 @@ export const AppContext = createContext<{
     userFullname: string | null,
     setUserFullname: ((data: string | null) => void) | null,
     showCart: boolean | null,
-    setShowCart: ((data: boolean | null) => void) | null
+    setShowCart: ((data: boolean | null) => void) | null,
+    userId : string | null,
+    setUserId : ((data: string | null) => void) | null
 
 }>({
     isScreenSmall: false, setIsScreenSmall: () => { }, cartList: [], setCartList: () => { },
     jwt: null, setJwt: () => { }, username: null, setUsername: null, userPhoneNumber: null,
-    setUserPhoneNumber: null, userFullname: null, setUserFullname: null, showCart: null, setShowCart: () => { }
+    setUserPhoneNumber: null, userFullname: null, setUserFullname: null, showCart: null, setShowCart: () => { },
+    userId: null, setUserId: () => { }
 });
 
 const Root = () => {
@@ -48,6 +51,8 @@ const Root = () => {
     const [userFullname, setUserFullname] = useState(null as string | null);
 
     const [showCart, setShowCart] = useState(false as boolean | null);
+
+    const [userId, setUserId] = useState(null as string | null);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -128,7 +133,8 @@ const Root = () => {
 
     return (
         <>
-            <AppContext.Provider value={{ isScreenSmall, setIsScreenSmall, cartList, setCartList, jwt, setJwt, username, setUsername, userPhoneNumber, setUserPhoneNumber, userFullname, setUserFullname, showCart, setShowCart }}>
+            <AppContext.Provider value={{ isScreenSmall, setIsScreenSmall, cartList, setCartList, jwt, setJwt, username, setUsername, userPhoneNumber,
+                setUserPhoneNumber, userFullname, setUserFullname, showCart, setShowCart, userId, setUserId }}>
                 {showCart ?
                     (cartList.length > 0 ? (<div className="cart">
                         <CrossLine handleCrossIconClick={handleCrossIconClick} />

@@ -1,30 +1,19 @@
 package com.commerce.eshop.DTO;
 
-import com.commerce.eshop.models.BillingAddress;
-import com.commerce.eshop.models.OrderRow;
-import jakarta.persistence.Id;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class OrderDTO {
+public class ShortOrderDTO {
     private UUID id;
 
     private String name;
 
     private String status;
-
-    private String bankName;
 
     private BigDecimal price;
 
@@ -35,9 +24,4 @@ public class OrderDTO {
 
     private String paymentUrl;
 
-    private BillingAddressDTO billingAddress;
-
-    private ApplicationUserDTO applicationUser;
-
-    List<OrderRowDTO> orderRows;
 }

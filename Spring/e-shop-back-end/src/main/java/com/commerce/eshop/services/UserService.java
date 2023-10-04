@@ -41,6 +41,10 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("user not found"));
     }
 
+    public ApplicationUser findUserById(UUID id){
+        return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("user not found"));
+    }
+
     public UpdatePasswordDTO updateUserPassword(String username, String oldPassword, String newPassword){
         ApplicationUser user = findUserByUsername(username);
         String encodedPassword = encoder.encode(oldPassword);

@@ -1607,3 +1607,77 @@ div.scroll-container img {
   font-size: 15px;
   margin: 5px;
 }
+
+.checkbox-checkout{
+  margin: 10px;
+}
+
+.totalPriceTitle, .totalPriceValue{
+  font-family: Domine;
+  font-size: large;
+  font-weight: bold;
+}
+
+.orders-container{
+  width: 80%;
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.order-list-line{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 10px;
+  background-color: #000000;
+  color: #ffffff;
+  border-radius: 15px;
+  align-items: center;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.order-line-text{
+  font-family: Domine;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px;
+}
+
+.order-line-button{
+  background-color: rgb(152, 254, 0);
+  color: #000;
+  outline: none;
+  box-shadow: none;
+  border: none;
+  width: 25%;
+  padding: 5px;
+  min-width: 56px;
+}
+
+.order-line-button:focus {
+  background-color: rgb(110, 180, 4);
+}
+
+.dropdown-icon{
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+  height: 15px;
+  width: 15px;
+}
+
+.right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+.down {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+

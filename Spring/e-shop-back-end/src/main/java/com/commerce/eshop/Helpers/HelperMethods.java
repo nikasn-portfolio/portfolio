@@ -2,6 +2,7 @@ package com.commerce.eshop.Helpers;
 
 import com.commerce.eshop.DTO.*;
 import com.commerce.eshop.models.*;
+import com.commerce.eshop.models.user.ApplicationUser;
 
 public class HelperMethods {
     public static CategoryDTO convertToCategoryDTO(Category category) {
@@ -42,9 +43,37 @@ public class HelperMethods {
         orderRowDTO.setId(orderRow.getId());
         orderRowDTO.setProduct(convertToProductDTO(orderRow.getProduct()));
         orderRowDTO.setSize(convertToSizeDTO(orderRow.getSize()));
-        orderRowDTO.setCandy(convertToCandyDTO(orderRow.getCandy()));
+        if(orderRow.getCandy() != null) {
+            orderRowDTO.setCandy(convertToCandyDTO(orderRow.getCandy()));
+        }else {
+            orderRowDTO.setCandy(null);
+        }
         orderRowDTO.setQuantity(orderRow.getQuantity());
         return orderRowDTO;
+    }
+
+    public static ApplicationUserDTO convertToApplicationUserDTO(ApplicationUser applicationUser){
+        ApplicationUserDTO applicationUserDTO = new ApplicationUserDTO();
+        applicationUserDTO.setUsername(applicationUser.getUsername());
+        applicationUserDTO.setFirstName(applicationUser.getFirstName());
+        applicationUserDTO.setLastName(applicationUser.getLastName());
+        applicationUserDTO.setPhoneNumber(applicationUser.getPhoneNumber());
+        return applicationUserDTO;
+    }
+
+    public static BillingAddressDTO convertToBillingAddressDTO(BillingAddress billingAddress){
+        BillingAddressDTO billingAddressDTO = new BillingAddressDTO();
+        billingAddressDTO.setFirstName(billingAddress.getFirstName());
+        billingAddressDTO.setLastName(billingAddress.getLastName());
+        billingAddressDTO.setId(billingAddress.getId());
+        billingAddressDTO.setLocality(billingAddress.getLocality());
+        billingAddressDTO.setCountry(billingAddress.getCountry());
+        billingAddressDTO.setAddressLine1(billingAddress.getAddressLine1());
+        billingAddressDTO.setEmail(billingAddress.getEmail());
+        billingAddressDTO.setRegion(billingAddress.getRegion());
+        billingAddressDTO.setPostalCode(billingAddress.getPostalCode());
+
+        return billingAddressDTO;
     }
 
     public static OrderDTO convertToOrderDTO(Order order){
@@ -58,6 +87,8 @@ public class HelperMethods {
         orderDTO.setBankName(order.getBankName());
         orderDTO.setPaymentUrl(order.getPaymentUrl());
         orderDTO.setName(order.getName());
+        orderDTO.setApplicationUser(convertToApplicationUserDTO(order.getApplicationUser()));
+        orderDTO.setBillingAddress(convertToBillingAddressDTO(order.getBillingAddress()));
         orderDTO.setOrderRows(order.getOrderRows().stream().map(HelperMethods::convertToOrderRowDTO).toList());
         return orderDTO;
     }

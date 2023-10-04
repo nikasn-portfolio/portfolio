@@ -1,5 +1,6 @@
 package com.commerce.eshop.DTO;
 
+import com.commerce.eshop.DTO.montonio.BillingAddress;
 import com.commerce.eshop.models.Candy;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -28,6 +29,10 @@ public class OrderPayloadDTO {
     private Date createdAt;
 
     private String paymentUrl;
+
+    private UUID customerId;
+
+    private BillingAddress billingAddress;
 
     private List<CartListDTO> orderRow;
 }

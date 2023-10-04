@@ -3,14 +3,11 @@ package com.commerce.eshop.controller;
 import com.commerce.eshop.DTO.*;
 import com.commerce.eshop.Helpers.HelperMethods;
 import com.commerce.eshop.models.*;
-import com.commerce.eshop.services.CandyService;
-import com.commerce.eshop.services.OrderService;
-import com.commerce.eshop.services.ProductService;
-import com.commerce.eshop.services.SizeService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.commerce.eshop.services.*;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -18,13 +15,16 @@ public class OrderController {
     private OrderService orderService;
     private CandyService candyService;
 
+    private UserService userService;
+
     private ProductService productService;
 
     private SizeService sizeService;
 
-    public OrderController(OrderService orderService, CandyService candyService, ProductService productService, SizeService sizeService) {
+    public OrderController(OrderService orderService, CandyService candyService, UserService userService, ProductService productService, SizeService sizeService) {
         this.orderService = orderService;
         this.candyService = candyService;
+        this.userService = userService;
         this.productService = productService;
         this.sizeService = sizeService;
     }
@@ -38,6 +38,8 @@ public class OrderController {
         order.setPrice(orderPayloadDTO.getGrandTotal());
         order.setCreatedAt(orderPayloadDTO.getCreatedAt());
         order.setPaymentUrl(orderPayloadDTO.getPaymentUrl());
+        order.setApplicationUser(userService.findUserById(orderPayloadDTO.getCustomerId()));
+        order.setBillingAddress(new BillingAddress(orderPayloadDTO.getBillingAddress().getFirstName(), orderPayloadDTO.getBillingAddress().getLastName(), orderPayloadDTO.getBillingAddress().getEmail(), orderPayloadDTO.getBillingAddress().getAddressLine1(), orderPayloadDTO.getBillingAddress().getLocality(), orderPayloadDTO.getBillingAddress().getRegion(), orderPayloadDTO.getBillingAddress().getCountry(), orderPayloadDTO.getBillingAddress().getPostalCode()));
         for (CartListDTO cartItem:  orderPayloadDTO.getOrderRow()) {
             if(cartItem.getItem().getCandies().isEmpty()){
                 OrderRow orderRow = new OrderRow();
@@ -64,5 +66,17 @@ public class OrderController {
         OrderDTO orderDTO = HelperMethods.convertToOrderDTO(saveOrder);
 
         return orderDTO;
+    }
+
+    @GetMapping("/getById/{id}")
+    public OrderDTO getOrderById(@PathVariable UUID id){
+        Order order = orderService.getOrderById(id);
+        OrderDTO orderDTO = HelperMethods.convertToOrderDTO(order);
+        return orderDTO;
+    }
+
+    @GetMapping("/getByCustomerId/{id}")
+    public List<OrderDTO> getShortOrdersByCustomerId(@PathVariable UUID id){
+        return null;
     }
 }

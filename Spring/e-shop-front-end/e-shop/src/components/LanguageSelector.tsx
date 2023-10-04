@@ -10,6 +10,7 @@ const LanguageSelector = () => {
     const [selectedLanguage, setSelectedLanguage] = useState(i18n.language); // i18n.language contains the language assigned to lng in i18n.js file.
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
+    const url = window.location.href.replace(/\/\?lang=[a-zA-Z]+/, '');
     const lang = searchParams.get('lang');
     const languages = {
         enSrc: GB,
@@ -45,9 +46,9 @@ const LanguageSelector = () => {
                 })()}
             </a>
             <ul className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <Link to={"./products/?lang=en"}><li><a className="dropdown-item"><img src={languages.enSrc} alt={languages.enAlt} className="language-image" /></a></li></Link>
-                <Link to={"./products/?lang=est"}><li><a className="dropdown-item"><img src={languages.estSrc} alt={languages.estAlt} className="language-image" /></a></li></Link>
-                <Link to={"./products/?lang=ru"}><li><a className="dropdown-item"><img src={languages.ruSrc} alt={languages.ruAlt} className="language-image" /></a></li></Link>
+            <Link to={url + "/?lang=en"}><li><a className="dropdown-item"><img src={languages.enSrc} alt={languages.enAlt} className="language-image" /></a></li></Link>
+                <Link to={url + "/?lang=est"}><li><a className="dropdown-item"><img src={languages.estSrc} alt={languages.estAlt} className="language-image" /></a></li></Link>
+                <Link to={url + "/?lang=ru"}><li><a className="dropdown-item"><img src={languages.ruSrc} alt={languages.ruAlt} className="language-image" /></a></li></Link>
             </ul>
         </li>
 

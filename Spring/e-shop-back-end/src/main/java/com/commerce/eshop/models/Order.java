@@ -1,5 +1,6 @@
 package com.commerce.eshop.models;
 
+import com.commerce.eshop.models.user.ApplicationUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -47,4 +48,12 @@ public class Order {
 
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<OrderRow> orderRows = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private ApplicationUser applicationUser;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "billing_address_id")
+    private BillingAddress billingAddress;
 }

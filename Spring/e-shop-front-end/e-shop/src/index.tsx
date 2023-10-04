@@ -17,6 +17,7 @@ import { LoginForm } from './routes/LoginForm';
 import { RegisterForm } from './routes/RegisterForm';
 import ProfileForm from './routes/ProfileForm';
 import CheckOut from './routes/CheckOut';
+import { OrderListPage } from './routes/OrderListPage';
 
 const router = createBrowserRouter([
   {
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
         {
           path: "/checkout",
           element : <CheckOut></CheckOut>
+        },
+        {
+          path: "/orders/:id",
+          element : <OrderListPage></OrderListPage>
         }
           
       ]

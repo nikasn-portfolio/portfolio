@@ -7,14 +7,19 @@ import { AppContext } from "./Root";
 import { PaymentMethod } from "../domain/montonio/ForGetBanks/PaymentMethod";
 import { TransactionTokenObject } from "../domain/montonio/TransactionTokenObject";
 import { LineItem } from "../domain/montonio/forPostTransaction/LineItem";
-import { t } from "i18next";
+import { t, use } from "i18next";
 import { OrderService } from "../services/OrderService";
+import { useNavigate } from "react-router-dom";
 
 
 const CheckOut = () => {
-    const { cartList, setCartList, isScreenSmall } = useContext(AppContext)
+    const { cartList, setCartList, isScreenSmall, userId } = useContext(AppContext)
     const [bankCountry, setBankCountry] = useState("EE");
     const [bankName, setBankName] = useState(null as string | null);
+    const navigate = useNavigate();
+    const deliveryOptions: Record<string, string> = {
+        Omniva: '10'
+      };
     const [billingErrors, setBillingErrors] = useState<{ [key: string]: boolean }>({});
     const initialTransactionPayload: TransactionPayload = {
         accessKey: "",
@@ -77,8 +82,50 @@ const CheckOut = () => {
     );
 
     useEffect(() => {
+        if(userId == null){
+            navigate("/login")
+        }
+    },[userId])
+
+    useEffect(() => {
         console.log(token);
     }, [transactionPayload])
+
+    useEffect(() => {
+        var checkbox = document.getElementById("Omniva") as HTMLInputElement | null;
+        if(checkbox != null && checkbox.checked){
+            setTransactionPayload(prevPayload => ({
+                ...prevPayload,
+                grandTotal: cartList.reduce((total, item) => total + item.totalItemPrice, 0) + parseInt(deliveryOptions.Omniva)
+                }));
+        }
+    }, [transactionPayload.grandTotal])
+
+    useEffect(() => {
+        var checkbox = document.getElementById("Omniva") as HTMLInputElement | null;
+        if(transactionPayload.billingAddress.locality == "Tallinn"){
+            setTransactionPayload(prevPayload => ({
+                ...prevPayload,
+                grandTotal: cartList.reduce((total, item) => total + item.totalItemPrice, 0)
+            }));
+        }
+    },[transactionPayload.billingAddress.locality])
+
+    useEffect(() => {
+        setTransactionPayload(prevPayload => ({
+            ...prevPayload,
+            grandTotal: cartList.reduce((total, item) => total + item.totalItemPrice, 0),
+            lineItems: cartList.map(cartItem => {
+                const lineItem: LineItem = {
+                    name: cartItem.item.name,
+                    quantity: cartItem.quantity,
+                    finalPrice: cartItem.totalItemPrice
+                }
+                return lineItem;
+            }
+            ),
+        }))
+    }, [cartList])
 
     useEffect(() => {
         const fetchMontonioData = async () => {
@@ -234,7 +281,7 @@ const CheckOut = () => {
             const transactionToken: TransactionTokenObject = { data: token };
             const orderData = await new MontonioPaymentService().getTransactionData(transactionToken);
             console.log(orderData);
-            const updatedPayload = { ...orderData, bankName: bankName, orderRow: cartList };
+            const updatedPayload = { ...orderData, bankName: bankName, orderRow: cartList, customerId : userId };
             console.log(updatedPayload);
             if(orderData !== undefined){
                 const order = await new OrderService().saveOrder(updatedPayload);
@@ -245,6 +292,40 @@ const CheckOut = () => {
         }
 
 
+    }
+
+    const handleDeliveryOptionChange = (event : React.ChangeEvent<HTMLInputElement>) =>{
+        const option = event.currentTarget.id;
+        if(option == "Omniva" && event.currentTarget.checked){
+            setTransactionPayload(prevPayload => ({
+                ...prevPayload,
+                grandTotal: cartList.reduce((total, item) => total + item.totalItemPrice, 0) + parseInt(deliveryOptions.Omniva),
+                lineItems: cartList.map(cartItem => {
+                    const lineItem: LineItem = {
+                        name: cartItem.item.name,
+                        quantity: cartItem.quantity,
+                        finalPrice: cartItem.totalItemPrice
+                    }
+                    return lineItem;
+                }
+                ),
+            }))
+        }
+        if(option == "Omniva" && event.currentTarget.checked == false){
+            setTransactionPayload(prevPayload => ({
+                ...prevPayload,
+                grandTotal: prevPayload.grandTotal - parseInt(deliveryOptions.Omniva),
+                lineItems: cartList.map(cartItem => {
+                    const lineItem: LineItem = {
+                        name: cartItem.item.name,
+                        quantity: cartItem.quantity,
+                        finalPrice: cartItem.totalItemPrice
+                    }
+                    return lineItem;
+                }
+                ),
+            }))
+        }
     }
 
 
@@ -283,19 +364,23 @@ const CheckOut = () => {
                     <input type="text" placeholder="13515" name="postalCode" className={`${billingErrors["postalCode"] === true ? "input-error" : ""}`} onChange={e => handleBillingAndShippingAddress(e)} />
                     <label htmlFor="">Postal code</label>
                 </div>
-                {transactionPayload.grandTotal >= 50 && transactionPayload.billingAddress.locality === "Tallinn" &&
+                {cartList.reduce((total, item) => total + item.totalItemPrice, 0) >= 50 && transactionPayload.billingAddress.locality === "Tallinn" &&
             
                 (<div className="check-out-delivery-info">
                     <div className="delivery-info-header">Delivery info:</div>
                     <div className="delivery-info-text">Free delivery in Tallinn for orders over 50€ ! We will contact you as soon as product will be finished.</div>
                 </div>)
                 }
-                {transactionPayload.grandTotal < 50 &&
+                {transactionPayload.billingAddress.locality != "Tallinn" &&
             
                 (<div className="check-out-delivery-info">
                     <div className="delivery-info-header">Delivery info:</div>
                     <div className="delivery-info-text">Orders below than 50€ have no free shipping by us.</div>
-                    <input type="checkbox" />
+                    <label htmlFor="">
+                        <input type="checkbox" className="checkbox-checkout" onChange={e => handleDeliveryOptionChange(e)} id="Omniva"  />
+                        Omniva: {deliveryOptions.Omniva}€
+                    </label>
+                    
                 </div>)
                 }
             </div>
@@ -351,6 +436,10 @@ const CheckOut = () => {
                         </div>
                         </>
                     ))}
+                    <div className="totalPriceContainerCheckOut">
+                            <span className="totalPriceTitle">Total price : </span>
+                            <span className="totalPriceValue">{transactionPayload.grandTotal}€</span>
+                    </div>
                     
             </div>
         </div>

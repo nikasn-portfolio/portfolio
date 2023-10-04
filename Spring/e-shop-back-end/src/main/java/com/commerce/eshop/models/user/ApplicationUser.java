@@ -2,6 +2,7 @@ package com.commerce.eshop.models.user;
 
 import java.util.*;
 
+import com.commerce.eshop.models.Order;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,6 +36,10 @@ public class ApplicationUser implements UserDetails{
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "applicationUser")
     private List<RefreshToken> refreshTokenList;
+
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "applicationUser")
+    private List<Order> orders;
 
 
     public ApplicationUser() {

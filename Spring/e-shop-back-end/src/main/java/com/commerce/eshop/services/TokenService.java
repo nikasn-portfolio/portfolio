@@ -75,6 +75,7 @@ public class TokenService {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("e-shop")
                 .subject(auth.getName())
+                .claim("userId", ((ApplicationUser) auth.getPrincipal()).getId())
                 .claim("roles", scope)
                 .claim("phone", ((ApplicationUser) auth.getPrincipal()).getPhoneNumber())
                 .claim("fullName", ((ApplicationUser) auth.getPrincipal()).getFirstName() + " " + ((ApplicationUser) auth.getPrincipal()).getLastName())

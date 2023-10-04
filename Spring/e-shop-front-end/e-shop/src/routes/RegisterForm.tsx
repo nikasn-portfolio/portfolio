@@ -7,9 +7,11 @@ import { AppContext } from './Root'
 import { RegisterDTO } from '../dto/RegisterDTO'
 import { useNavigate } from 'react-router-dom'
 import { AuthenticationService } from '../services/AuthenticationService'
+import jwtWebToken from 'jsonwebtoken';
+
 
 export const RegisterForm = () => {
-    const { jwt, setJwt } = useContext(AppContext);
+    const { jwt, setJwt, setUserId } = useContext(AppContext);
     const [values, setValues] = useState({
         username: "",
         password: "",
@@ -84,7 +86,7 @@ export const RegisterForm = () => {
         }
         const response = await authenticationService.register(values);
         if (response != undefined) {
-            if(response.errorMessage.length > 0){
+            if (response.errorMessage.length > 0) {
                 emailField!.style.border = "2px solid red";
                 errors.push(response.errorMessage);
                 const errorMessage = errors.map((error, index) => {
@@ -96,13 +98,17 @@ export const RegisterForm = () => {
                         </div>
                     );
                 });
-    
+
                 setError(errorMessage);
                 return;
             }
             if (setJwt) {
                 console.log(response);
                 setJwt(response);
+                const decodedToken = jwtWebToken.decode(response.jwt) as { userId: string } | null;
+                if (decodedToken !== null && setUserId !== null) {
+                    setUserId(decodedToken.userId);
+                }
             }
         }
     }
@@ -110,7 +116,7 @@ export const RegisterForm = () => {
     useEffect(() => {
         //TODO: check if jwt is not null and redirect to home page
         if (jwt !== null) {
-            navigate(-1);
+            navigate("/home");
         }
     }, [jwt]);
 
@@ -119,7 +125,7 @@ export const RegisterForm = () => {
     return (
         <div className="registerFormContainer">
             <div className='loginFormErrorContainer'>
-                { error != null ? (error.map((errorMessage, index) => (
+                {error != null ? (error.map((errorMessage, index) => (
                     <div key={index}>{errorMessage}</div>
                 ))) : (<div></div>)}
             </div>

@@ -13,7 +13,7 @@ import { ICartItem } from '../domain/ICartItem';
 import { HelperMethods } from '../helpers/Helpers';
 
 const Navbar = () => {
-    const { jwt, setJwt, username, setUsername, setUserPhoneNumber, setUserFullname, cartList, setShowCart } = useContext(AppContext);
+    const { jwt, setJwt, username, setUsername, setUserPhoneNumber, setUserFullname, cartList, setShowCart, userId, setUserId } = useContext(AppContext);
     const { t } = useTranslation();
     const { isScreenSmall, setIsScreenSmall } = useContext(AppContext);
     const [decodedJwt, setDecodedJwt] = useState() as any;
@@ -87,11 +87,12 @@ const Navbar = () => {
 
     const handleLogOut = () => {
         console.log('test')
-        if (setJwt && setUserFullname && setUserPhoneNumber && setUsername) {
+        if (setJwt && setUserFullname && setUserPhoneNumber && setUsername && setUserId) {
             setJwt(null);
             setUserFullname(null);
             setUserPhoneNumber(null);
             setUsername(null)
+            setUserId(null);
         }
 
     }
@@ -153,6 +154,7 @@ const Navbar = () => {
                         <span className='profileUsername'>{decodedJwt.sub}</span>
                     </div>
                     <div className="dropdown-content-profile">
+                        <Link to={'/orders/' + userId}>Orders</Link>
                         <Link to={'/profile'}><span>Profile</span></Link>
                         <Link to={'/home'} onClick={handleLogOut}><span>Logout</span></Link>
                     </div>
@@ -206,6 +208,7 @@ const Navbar = () => {
                                 <span className='profileUsername'>{decodedJwt.sub}</span>
                             </div>
                             <div className="dropdown-content-profile">
+                                <Link to={'/orders/' + userId}>Orders</Link>
                                 <Link to={'/profile'}><span>Profile</span></Link>
                                 <Link to={'/home'} onClick={handleLogOut}><span>Logout</span></Link>
                             </div>
